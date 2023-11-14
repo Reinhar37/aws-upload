@@ -8,7 +8,7 @@ git add .
 git config --global user.email "fbasz6857@naver.com" 
 git config --global user.name "Reinhar37" 
 git commit -m "Initial commit"
-git remote add origin https://github.com/Reinhar37/nodebird //origin은 주소의 별명
+git remote add origin https://github.com/Reinhar37/aws-upload //origin은 주소의 별명
 git remote get-url origin //origin확인
 git remote rm origin //origin삭제
 git push origin master

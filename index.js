@@ -1,5 +1,5 @@
 const sharp = require('sharp');
-const { S3Client } = require('@aws-sdk/client-s3');
+const { S3Client, GetObjectCommand, PutObjectCommand } = require('@aws-sdk/client-s3');
 const resize = require('sharp/lib/resize');
 
 const s3 = new S3Client();
@@ -13,17 +13,22 @@ exports.handler = async (event, context, callback) => {
   console.log('name', filename, 'ext', ext);
 
   try {
-    const s3Object = await s3.getObject({ Bucket, Key });
-    console.log('original', s3Object.Body.length);
-    const resizedImage =  await sharp(s3Object.Body)
+    const getObject = await s3.send(new GetObjectCommand({ Bucket, Key }));
+    const buffers = [];
+    for await ( const data of getObject.Body) {
+      buffers.push(data);
+    }
+    const imageBuffer = Buffer.concat(buffers);
+    console.log('put', imageBuffer.length);
+    const resizedImage =  await sharp(imageBuffer)
       .resize(200, 200, { fit: 'inside' }) //비율을 유지하면서 최대한 200으로 만든다.
       .toFormat(requiredFormat)
       .toBuffer();
-    await s3.putObject({
+    await s3.send(new PutObjectCommand({
       Bucket,
       Key: `thumb/${filename}`, // thumb/파일이름.png
       Body: resizedImage,
-    })
+    }));
     console.log('put', resizedImage.length);
     return callback(null, `thumb/${filename}`); //첫번째는 에러자리 두번째는 응답값자리 노드에서의 국룰?
   } catch (error) {

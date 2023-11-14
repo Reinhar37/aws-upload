@@ -12,3 +12,25 @@ git remote add origin https://github.com/Reinhar37/aws-upload //origin은 주소
 git remote get-url origin //origin확인
 git remote rm origin //origin삭제
 git push origin master
+
+
+/////이부분은 aws터미널
+git clone https://github.com/Reinhar37/aws-upload
+ls //확인
+cd aws-upload
+npm i
+zip -r aws-upload.zip ./*
+ls //확인
+
+//만약 aws명령어사용이 안될시
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+aws configure
+aws s3 cp "aws-upload.zip" s3://nodejsbookpap
+
+/////여기까지
+
+14/controllers/post.js 수정(afterUploadImage 수정)
+14/views/main.html 수정(이미지 보여주는부분 수정)
